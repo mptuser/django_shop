@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<div class='container'>
+    <div class="row justify-content-center">
+        
+        <div class="col-md-4">
+            {% if product.image %}
+            <h4>
+                Изображение:
+            </h4>
+                
+            <img height=200px width=300 src="{{ product.image.url }}" alt="product">
+            
+            {% endif %}
+            <div class="col-md-12">
+
+                <form action='{% url "add_order_url" product.id %}' method="POST">
+                    {% csrf_token %}
+                    <div class="row justify-content-center">
+                        <div class="col-md-3">
+                            <label for='id_count'>Количество</label>
+                            {{form_order|crispy}}     
+                        </div>
+                        <div class="col-auto">
+                            <input type="submit" class='btn btn-primary mt-3' 
+                            value="Добавить в корзину">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            </div>
+        <div class="col-md-4">
+            <div class="card-body">
+                
+                <h3><b>Название:</b> {{ product.name }} </h3>
+                
+                <p><b>Стоимость:</b> {{ product.price }} </p>
+                <p><b>Количество:</b> {{ product.count }} </p>
+                <p><b>Описание:</b> {{ product.description }} </p>
+                
+            </div>
+        </div>
+    
+    </div>
+    
+    
+    
+</div>
+<div class='container-fluid'>
+    <h3>
+        Комментарии:
+    </h3>
+
+    {% for comment in product.comments.all  %}
+    <div class="row justify-content-center">
+        <div class="card mb-3" style="width: 30rem;">
+            <div class="card-body">
+                <h5 class="card-title">Автор: {{comment.author}}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">Время: {{ comment.time_stamp }}</h6>
+                <p class="card-text">Комментарий: {{ comment.comment }}</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    
+    {% if user.is_authenticated %}
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class='card-body'>
+
+                <form action="{% url 'add_comment_url' product.id %}" method="post">
+                    <p><strong>Введите текст комментария ниже:</strong></p>
+                    
+                    {% csrf_token %}
+                    {{form}}
+                    <input class='btn btn-primary mt-2' type='submit' value='Комментировать'>
+                    
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock content %}
